@@ -1,5 +1,4 @@
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { useState } from "react";
 
 type QrScannerBoxProps = {
   onClose: () => void;
