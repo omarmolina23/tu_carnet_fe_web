@@ -5,6 +5,8 @@
   --font-poppins: "Poppins", sans-serif;
   --color-ufps-red: #D92D37;
   --color-ufps-gray: #334155;
+  --color-ufps-hover-red: #B02228;
+  --color-ufps-hover-black: #1F2937;
 }
 
 body {

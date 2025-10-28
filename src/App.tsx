@@ -1,8 +1,6 @@
 import ValidatePage from "./pages/ValidatePage";
 
 function App() {
-
-
   return (
     <ValidatePage />
   )

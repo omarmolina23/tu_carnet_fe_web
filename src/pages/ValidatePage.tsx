@@ -3,14 +3,16 @@ import type { Student } from "../types/student";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StudentCard from "../components/StudentCard";
+import QrScannerBox from "../components/QrScannerBox";
 
 export default function ValidatePage() {
   const [code, setCode] = useState("");
   const [student, setStudent] = useState<Student | null>(null);
   const [valid, setValid] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
-  const handleValidate = () => {
+  const handleValidate = (code: string) => {
     setHasValidated(true);
     {
       /* Validate code simulation */
@@ -39,6 +41,7 @@ export default function ValidatePage() {
       setValid(false);
       setStudent(null);
     }
+    setCode("");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +57,7 @@ export default function ValidatePage() {
       <Header />
 
       {/* Main content */}
-      <main className="grow flex flex-col items-center mt-10 px-4">
+      <main className="grow flex flex-col items-center mt-10 mb-10 px-4">
         <div className="w-full max-w-3xl text-center">
           <label className="block text-left font-semibold mb-2 text-lg">
             Código <span className="text-ufps-red italic font-bold">UFPS</span>
@@ -63,7 +66,7 @@ export default function ValidatePage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleValidate();
+              handleValidate(code);
             }}
             className="flex flex-col sm:flex-row gap-3"
           >
@@ -74,23 +77,23 @@ export default function ValidatePage() {
               onChange={handleChange}
               className="border border-gray-300 bg-white rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-red-500"
             />
-
             <button
               type="submit"
-              className="bg-ufps-red text-white font-semibold px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+              className="bg-ufps-red text-white font-semibold px-4 py-2 rounded-md hover:bg-ufps-hover-red transition-colors"
             >
               Validar código
             </button>
 
             <button
               type="button"
-              className="bg-ufps-gray text-white font-semibold px-4 py-2 rounded-md hover:bg-gray-900 transition-colors"
+              onClick={() => setShowScanner(true)}
+              className="bg-ufps-gray text-white font-semibold px-4 py-2 rounded-md hover:bg-ufps-hover-black transition-colors"
             >
               Escanear código QR
             </button>
           </form>
 
-          {/* Mensaje solo si ya presionó el botón */}
+          {/* Student card */}
           {hasValidated && (
             <>
               {valid && student ? (
@@ -107,6 +110,16 @@ export default function ValidatePage() {
                 </div>
               )}
             </>
+          )}
+
+          {/* QrScannerBox component */}
+          {showScanner && (
+            <QrScannerBox
+              onClose={() => setShowScanner(false)}
+              onResult={(value) => {
+                handleValidate(value); // ✅ ejecuta tu función con el valor escaneado
+              }}
+            />
           )}
         </div>
       </main>
