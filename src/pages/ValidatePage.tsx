@@ -1,9 +1,11 @@
 import { useState } from "react";
 import type { Student } from "../types/student";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Header from "../components/Header";
-import Footer from "../components/Footer";
-import StudentCard from "../components/StudentCard";
-import QrScannerBox from "../components/QrScannerBox";
+import Footer from "../components/validation_home/Footer";
+import StudentCard from "../components/validation_home/StudentCard";
+import QrScannerBox from "../components/validation_home/QrScannerBox";
 
 export default function ValidatePage() {
   const [code, setCode] = useState("");
@@ -52,15 +54,15 @@ export default function ValidatePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-200">
+    <div className="flex flex-col min-h-screen bg-ufps-gris-principal">
       {/* Header */}
       <Header />
 
       {/* Main content */}
       <main className="grow flex flex-col items-center mt-10 mb-10 px-4">
         <div className="w-full max-w-3xl text-center">
-          <label className="block text-left font-semibold mb-2 text-lg">
-            Código <span className="text-ufps-red italic font-bold">UFPS</span>
+          <label className="block text-left font-medium mb-2 text-medium">
+            Código <span className="text-ufps-color-principal italic font-bold">UFPS</span>
           </label>
 
           <form
@@ -68,29 +70,32 @@ export default function ValidatePage() {
               e.preventDefault();
               handleValidate(code);
             }}
-            className="flex flex-col sm:flex-row gap-3"
+            className="flex flex-col sm:flex-row gap-3 items-stretch"
           >
-            <input
+            <Input
               type="text"
               placeholder="Ingresa tu código de estudiante"
               value={code}
               onChange={handleChange}
-              className="border border-gray-300 bg-white rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="border border-ufps-texto-principal bg-ufps-blanco-favorito rounded-md px-4 h-10 flex-3 placeholder:text-sm
+               focus:outline-none focus:ring-2 focus:ring-red-500"
             />
-            <button
+
+            <Button
               type="submit"
-              className="bg-ufps-red text-white font-semibold px-4 py-2 rounded-md hover:bg-ufps-hover-red transition-colors"
+              className="bg-ufps-color-principal text-ufps-blanco-favorito font-medium px-4 h-10 rounded-md flex-1"
             >
               Validar código
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
               onClick={() => setShowScanner(true)}
-              className="bg-ufps-gray text-white font-semibold px-4 py-2 rounded-md hover:bg-ufps-hover-black transition-colors"
+              className="bg-ufps-informacion-oscuro text-ufps-blanco-favorito font-medium px-4 h-10 rounded-md flex-1"
             >
               Escanear código QR
-            </button>
+            </Button>
+
           </form>
 
           {/* Student card */}
@@ -98,14 +103,13 @@ export default function ValidatePage() {
             <>
               {valid && student ? (
                 <>
-                  <div className="mt-6 bg-green-200 text-green-900 py-2 rounded-md font-semibold">
-                    El estudiante pertenece a la{" "}
-                    <span className="text-red-600">UFPS</span>
+                  <div className="mt-6 bg-ufps-success-claro text-ufps-success-oscuro py-2 rounded-md text-sm font-semibold">
+                    El estudiante pertenece a la UFPS
                   </div>
                   <StudentCard student={student} />
                 </>
               ) : (
-                <div className="mt-6 bg-red-200 text-red-900 py-2 rounded-md font-semibold">
+                <div className="mt-6 bg-ufps-error-claro text-ufps-error-principal py-2 rounded-md text-sm font-semibold">
                   Código no válido o estudiante no encontrado
                 </div>
               )}

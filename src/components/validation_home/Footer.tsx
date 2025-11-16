@@ -1,6 +1,6 @@
 export default function Footer() {
     return(
-        <footer className="bg-red-700 text-white text-center py-3 mt-auto">
+        <footer className="bg-ufps-color-principal border-t border-ufps-error-principal text-ufps-blanco-favorito text-center py-3 mt-auto">
         <p>
           TuCarnet <span className="font-bold">UFPS</span>
         </p>

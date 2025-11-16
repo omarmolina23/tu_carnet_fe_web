@@ -1,4 +1,5 @@
 import { Scanner } from "@yudiel/react-qr-scanner";
+import { Button } from "@/components/ui/button";
 
 type QrScannerBoxProps = {
   onClose: () => void;
@@ -7,9 +8,9 @@ type QrScannerBoxProps = {
 
 export default function QrScannerBox({ onClose, onResult }: QrScannerBoxProps) {
   return (
-    <div className="mt-5 bg-white p-4 rounded-lg shadow-md border border-gray-300">
+    <div className="mt-5 bg-ufps-blanco-favorito p-4 rounded-lg shadow-md border border-ufps-texto-principal">
       {/* Centered text */}
-      <p className="text-gray-700 font-semibold text-center mb-3">
+      <p className="text-ufps-texto-oscuro text-sm font-semibold text-center mb-3">
         Escanea el código QR del estudiante
       </p>
 
@@ -36,12 +37,12 @@ export default function QrScannerBox({ onClose, onResult }: QrScannerBoxProps) {
 
       {/* Button */}
       <div className="flex justify-center">
-        <button
+        <Button
           onClick={onClose}
-          className=" bg-ufps-red text-white px-3 py-1 rounded hover:bg-ufps-hover-red transition-colors"
+          className="bg-ufps-color-principal text-ufps-blanco-favorito font-medium px-4 h-10 rounded-md flex-1"
         >
           Cerrar
-        </button>
+        </Button>
       </div>
     </div>
   );
