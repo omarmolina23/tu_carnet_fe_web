@@ -39,7 +39,7 @@ export default function QrScannerBox({ onClose, onResult }: QrScannerBoxProps) {
       <div className="flex justify-center">
         <Button
           onClick={onClose}
-          className="bg-ufps-color-principal text-ufps-blanco-favorito font-medium px-4 h-10 rounded-md flex-1"
+          className="bg-ufps-color-principal text-ufps-blanco-favorito font-medium px-4 h-10 w-fit rounded-md"
         >
           Cerrar
         </Button>
