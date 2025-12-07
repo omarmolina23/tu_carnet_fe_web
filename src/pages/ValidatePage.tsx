@@ -13,7 +13,7 @@ export default function ValidatePage() {
   const [code, setCode] = useState("");
   const [student, setStudent] = useState<StudentView | null>(null);
   const [loading, setLoading] = useState(false);
-  const [valid, setValid] = useState(false);
+  //const [valid, setValid] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
@@ -29,10 +29,10 @@ export default function ValidatePage() {
       const studentFromApi = await getStudentByCode(code);
 
       setStudent(studentFromApi);
-      setValid(true);
+      //setValid(true);
     } catch (error) {
       setStudent(null);
-      setValid(false);
+      //setValid(false);
     } finally {
       setLoading(false);
       setCode("");
@@ -52,10 +52,10 @@ export default function ValidatePage() {
     }
 
     setStudent(result.student);
-    setValid(true);
+    //setValid(true);
   } catch (error) {
     setStudent(null);
-    setValid(false);
+    //setValid(false);
   } finally {
     setLoading(false);
   }
@@ -65,7 +65,7 @@ export default function ValidatePage() {
     setCode(e.target.value);
     setHasValidated(false);
     setStudent(null);
-    setValid(false);
+    //setValid(false);
   };
 
   return (
@@ -151,9 +151,9 @@ export default function ValidatePage() {
             <QrScannerBox
               onClose={() => setShowScanner(false)}
               onResult={(token) => handleValidateQr(token)}
-              onInvalid={(msg) => {
+              onInvalid={() => {
                 setHasValidated(true);
-                setValid(false);
+                //setValid(false);
                 setStudent(null);
               }}
             />
