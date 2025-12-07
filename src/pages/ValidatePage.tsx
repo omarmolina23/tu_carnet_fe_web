@@ -1,50 +1,65 @@
 import { useState } from "react";
-import type { Student } from "../types/student";
+import type { StudentView } from "../types/student";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Header from "../components/Header";
 import Footer from "../components/validation_home/Footer";
 import StudentCard from "../components/validation_home/StudentCard";
 import QrScannerBox from "../components/validation_home/QrScannerBox";
+import { getStudentByCode } from "../services/student/service";
+import { validateQrToken } from "../services/qr/service";
 
 export default function ValidatePage() {
   const [code, setCode] = useState("");
-  const [student, setStudent] = useState<Student | null>(null);
+  const [student, setStudent] = useState<StudentView | null>(null);
+  const [loading, setLoading] = useState(false);
   const [valid, setValid] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
-  const handleValidate = (code: string) => {
+  const handleValidate = async (code: string) => {
+    if (!code) return;
+
     setHasValidated(true);
-    {
-      /* Validate code simulation */
-    }
-    if (code === "1152669") {
+    setLoading(true);
+
+    try {
+      console.log("🔎 Validating code:", code);
+
+      const studentFromApi = await getStudentByCode(code);
+
+      setStudent(studentFromApi);
       setValid(true);
-      setStudent({
-        name: "Dua Lipa",
-        code: "1152669",
-        career: "Ingeniería de Sistemas",
-        status: "Matriculado",
-        image:
-          "https://www.hola.com/horizon/square/f7cf22f58810-dua-lipa-fotos-infancia-modelo-t.jpg",
-      });
-    } else if (code === "1152670") {
-      setValid(true);
-      setStudent({
-        name: "Tate McRae",
-        code: "1152670",
-        career: "Ingeniería de Sistemas",
-        status: "Matriculado",
-        image:
-          "https://hips.hearstapps.com/hmg-prod/images/tate-mcrae-attends-the-brit-awards-2024-at-the-o2-arena-on-news-photo-1710255013.jpg?crop=0.663xw:1.00xh;0.169xw,0&resize=1200:*",
-      });
-    } else {
-      setValid(false);
+    } catch (error) {
       setStudent(null);
+      setValid(false);
+    } finally {
+      setLoading(false);
+      setCode("");
     }
-    setCode("");
   };
+
+  const handleValidateQr = async (token: string) => {
+  setShowScanner(false);
+  setHasValidated(true);
+  setLoading(true);
+
+  try {
+    const result = await validateQrToken(token);
+
+    if (!result.valid || !result.student) {
+      throw new Error("QR inválido o expirado");
+    }
+
+    setStudent(result.student);
+    setValid(true);
+  } catch (error) {
+    setStudent(null);
+    setValid(false);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCode(e.target.value);
@@ -62,7 +77,10 @@ export default function ValidatePage() {
       <main className="grow flex flex-col items-center mt-10 mb-10 px-4">
         <div className="w-full max-w-3xl text-center">
           <label className="block text-left font-medium mb-2 text-medium">
-            Código <span className="text-ufps-color-principal italic font-bold">UFPS</span>
+            Código{" "}
+            <span className="text-ufps-color-principal italic font-bold">
+              UFPS
+            </span>
           </label>
 
           <form
@@ -95,17 +113,29 @@ export default function ValidatePage() {
             >
               Escanear código QR
             </Button>
-
           </form>
 
           {/* Student card */}
           {hasValidated && (
             <>
-              {valid && student ? (
+              {loading ? (
+                <div className="mt-6 bg-ufps-informacion-claro text-ufps-informacion-oscuro py-2 rounded-md text-sm font-semibold">
+                  Validando estudiante...
+                </div>
+              ) : student ? (
                 <>
-                  <div className="mt-6 bg-ufps-success-claro text-ufps-success-oscuro py-2 rounded-md text-sm font-semibold">
-                    El estudiante pertenece a la UFPS
-                  </div>
+                  {/* MENSAJE SEGÚN STATUS */}
+                  {student.status === "MATRICULADO" ? (
+                    <div className="mt-6 bg-ufps-success-claro text-ufps-success-oscuro py-2 rounded-md text-sm font-semibold">
+                      El estudiante pertenece a la UFPS
+                    </div>
+                  ) : (
+                    <div className="mt-6 bg-ufps-error-claro text-ufps-error-principal py-2 rounded-md text-sm font-semibold">
+                      El estudiante NO se encuentra activo
+                    </div>
+                  )}
+
+                  {/* SIEMPRE SE MUESTRA EL CARD SI EXISTE */}
                   <StudentCard student={student} />
                 </>
               ) : (
@@ -120,8 +150,11 @@ export default function ValidatePage() {
           {showScanner && (
             <QrScannerBox
               onClose={() => setShowScanner(false)}
-              onResult={(value) => {
-                handleValidate(value); // ✅ ejecuta tu función con el valor escaneado
+              onResult={(token) => handleValidateQr(token)}
+              onInvalid={(msg) => {
+                setHasValidated(true);
+                setValid(false);
+                setStudent(null);
               }}
             />
           )}

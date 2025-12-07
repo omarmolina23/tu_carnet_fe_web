@@ -1,7 +1,9 @@
-export interface Student {
+export interface StudentView {
+    student_code: string;
     name: string;
-    code: string;
+    last_name: string;
+    student_type: string;
     career: string;
     status: string;
-    image: string;
+    card_photo_key?: string | null;
 }
