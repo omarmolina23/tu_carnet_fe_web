@@ -1,9 +1,5 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Menu, X } from "lucide-react"; // íconos
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
 
   return (
     <header className="px-5 py-2 border-b border-ufps-texto-principal bg-[#faf7f7]">
