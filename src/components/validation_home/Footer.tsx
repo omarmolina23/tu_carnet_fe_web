@@ -4,7 +4,7 @@ export default function Footer() {
         <p>
           TuCarnet <span className="font-bold">UFPS</span>
         </p>
-        <p className="text-sm">© 2025. Todos los derechos reservados</p>
+        <p className="text-sm">© {new Date().getFullYear()}. Todos los derechos reservados</p>
       </footer>
     );
 }
