@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# TuCarnet — Web de validación de carnet (UFPS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web pública para **validar el carnet estudiantil** de la UFPS. Permite verificar, ingresando el **código del estudiante** o **escaneando su código QR**, si la persona pertenece a la universidad y si está activa (matriculada), mostrando su tarjeta con los datos.
 
-Currently, two official plugins are available:
+Pensada para puntos de control (porterías, eventos, bibliotecas, etc.).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tecnologías
 
-## React Compiler
+- **React 19** + **Vite** + **TypeScript**
+- **Tailwind CSS** + componentes **shadcn/ui** (Radix)
+- **@yudiel/react-qr-scanner** (escaneo de QR)
+- **React Router**, **React Helmet**, **Axios**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Funcionamiento
 
-## Expanding the ESLint configuration
+1. El usuario ingresa un **código de estudiante** o pulsa **Escanear código QR**.
+2. La app consulta al backend:
+   - Por código → `GET /api/student/code/:code`.
+   - Por QR → `POST /api/qr/validate` (valida el token del QR).
+3. Muestra el resultado:
+   - ✅ "El estudiante pertenece a la UFPS" si está `MATRICULADO`.
+   - ⚠️ "El estudiante NO se encuentra activo" en otro caso.
+4. La foto del carnet se obtiene como **URL firmada** desde el servicio de liveness (`POST /liveness/photo/signedUrl`).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Requisitos previos
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 20+ y npm
+- El **backend** (`tucarnet_be`) y el **servicio de liveness** (`liveness_tucarnet_service`) desplegados o en local.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Variables de entorno
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Crea un archivo **`.env.local`** en la raíz:
+
+```env
+VITE_API_URL=https://tucarnetbe-production.up.railway.app/api
+VITE_AWS_API_URL=https://livenesstucarnetservice-production.up.railway.app/liveness
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+| Variable | Descripción |
+|---|---|
+| `VITE_API_URL` | Base del backend. Como los servicios usan rutas relativas (`student/code/...`, `qr/validate`), **sí debe incluir** `/api` al final. |
+| `VITE_AWS_API_URL` | Base del servicio de liveness para las URLs firmadas de fotos. Las rutas son relativas (`photo/signedUrl`), así que **debe incluir** `/liveness` al final. |
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Puesta en marcha (local)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+# crea el .env.local (ver arriba)
+npm run dev
 ```
+
+Disponible en `http://localhost:5173`.
+
+Otros scripts:
+```bash
+npm run build     # type-check + build de producción (dist/)
+npm run preview   # sirve el build de producción
+npm run lint      # ESLint
+```
+
+## Estructura
+
+```
+src/
+  api/           Clientes Axios (backend y liveness)
+  components/    Header, Footer, QrScannerBox, StudentCard, UI (shadcn)
+  pages/         ValidatePage (pantalla principal de validación)
+  services/      student, qr, aws (foto firmada)
+  types/         StudentView
+  utils/         helpers de QR
+```
+
+## Despliegue (Vercel)
+
+1. Importa el repositorio en tu cuenta de **Vercel** (framework **Vite**: build `npm run build`, output `dist`).
+2. Configura las **Environment Variables** (las dos de arriba).
+3. Deploy.
+
+> El año del pie de página (`Footer.tsx`) se calcula automáticamente con `new Date().getFullYear()`, así que no hay que actualizarlo a mano cada año.
